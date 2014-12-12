@@ -1,8 +1,12 @@
-== Arkopter
+Arkopter
+========
 
-=== Data structures
+Data structures
+---------------
 
-=== Implementation
+Implementation
+--------------
+
 
 Things you may want to cover:
 
