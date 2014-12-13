@@ -12,5 +12,19 @@
 #  updated_at     :datetime
 #
 
+# The Products table is the Inventory of SKUs 
 class Product < ActiveRecord::Base
+	belongs_to :stock_item
+	belongs_to :quad_arkopter
+	belongs_to :order
+
+	def set_availabilty
+		item = self.stock_item
+		AbacusNinja.perform_async("set_availabilty",item.name, self.item.quantity) if item.present?
+	end
+
+	def get_availabilty
+		item = self.stock_item
+		AbacusNinja.perform_async("get_availabilty",item.name) if item.present?
+	end
 end

@@ -12,10 +12,13 @@ gem 'sinatra', '>= 1.4.3', require: false # if you require 'sinatra' you get the
 gem 'yajl-ruby'
 
 # -- App needs
-gem 'acts-as-taggable-on', '~> 2.4.1'
-gem 'sanitize'
-gem 'kaminari', '0.14.1'
-gem 'crunchbase', '0.3.1', git: 'git://github.com/cocoonventures/crunchbase'
+gem 'redis-objects'
+
+# gem 'redis'
+# gem 'acts-as-taggable-on', '~> 2.4.1'
+# gem 'sanitize'
+# gem 'kaminari', '0.14.1'
+# gem 'crunchbase', '0.3.1', git: 'git://github.com/cocoonventures/crunchbase'
 
 # -- Infrastructure
 gem 'guard'
