@@ -42,7 +42,7 @@ class StockItem < ActiveRecord::Base
 		options[:quantity].downto(1) do |i|
 			begin
 				p = self.products.create!(
-					inventory_name: 	"%s%0#{options[:name_padding]}d" %[options[:name_prefix], i],
+					inventory_name: 	"%s%0#{(options[:name_padding])}d" %[options[:name_prefix], i],
 					status: 			options[:status]
 				)
 			rescue
