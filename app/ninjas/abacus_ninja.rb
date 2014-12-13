@@ -13,7 +13,7 @@ class AbacusNinja
 		# @collections = @options['collections'] or ""
 
 		if self.class.method_defined?(action) or self.class.private_method_defined?(action)
-			if options.has_key?('arguments')
+			if arguments.size > 0
 				self.send(action,*arguments)
 			else
 				self.send(action) # avoid wrong number arguments potential
@@ -46,16 +46,10 @@ class AbacusNinja
 		Sidekiq.redis do |connection|
 			Redis::Semaphore.new("#{lock_name}", redis: connection) do # product level lock
 				if connection.hset("inventory", name, value) and value > 0
-					connection.hset("inventory", "#{name}_available", true)
+					# connection.hset("inventory", "#{name}_available", true)
 				end
 			end
 		end
 	end
-
-	# doesn't make sense for async
-	# def available?(name)
-	# 	available = get_availability(name) | 0
-	# 	return available > 0
-	# end 
 	
 end
