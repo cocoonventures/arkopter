@@ -22,12 +22,12 @@ class StockItem < ActiveRecord::Base
 	def sync_inventory
 		# @inv = Redis::HashKey.new('inventory') if !@inv.empty?
 		# Redis::Lock.new("#{name}_inventory") do 							#, :expiration => 15, :timeout => 0.1)   #self.inventory_lock.lock do
-		# 	#@inv = Redis::HashKey.new('inventory') 							# not necessary, but safe
+		# 	#@inv = Redis::HashKey.new('inventory') 						# not necessary, but safe
 		# 	self.inventory["#{self.name}"]
 		# end
-		# self.quantity = @inv[self.name]										# release lock first
-		self.quantity = inventory["#{self.name}"]
-
+		# self.quantity = @inv[self.name]									# release lock first
+		@inv = Redis::HashKey.new('inventory') if @inv.blank?
+		self.quantity = @inv[self.name]										# self.quantity = inventory["#{self.name}"]
 	end 
 
 	def set_inventory(value=nil)
@@ -66,7 +66,7 @@ class StockItem < ActiveRecord::Base
 				self.save # can pull this out of the loop later to optimize (?)
 			end
 		end
-		set_inventory(self.quantity)
+		set_inventory
 	end
 
 	private
