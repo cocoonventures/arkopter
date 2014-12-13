@@ -1,0 +1,2 @@
+module QuadArkoptersHelper
+end
