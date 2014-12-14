@@ -9,26 +9,17 @@ class FulfillmentNinja
 	sidekiq_options queue: "fulfillment", backtrace: true
 	sidekiq_options retry: true
 
-	def perform(action, *arguments)
-		@options = arguments.last.is_a?(Hash) ? arguments.pop : {}
-
-		if self.class.method_defined?(action) or self.class.private_method_defined?(action)
-			if arguments.size > 0
-				self.send(action,*arguments)
-			else
-				self.send(action)
-			end
-		end
-	end 
-
-	def fulfill_order(id)
+	def perform(order_id)
 		o = Order.find(id)
-	rescue
+	rescue ActiveRecord::RecordNotFound => e
 		logger.debug "FulfillmentNinja can't find order \#: (#{id})"
+	rescue
+		logger.debug "FulfillmentNinja fighting Confucius, no idea what happened!"
 	else
-		dispatch_quad_arkopters
+		dispatch_quad_arkopters 
 	end	
 
+	# this can be broken out into its own Worker
 	def dispatch_quad_arkopters
 	end
 end

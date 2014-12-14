@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 	# orders are made with a product hash where key=stock_item name and
 	# value=quantity being purchased
 	def make_order(product_hash)
-		order = self.orders.create!(status: "processing")
+		order = self.orders.create!(status: "processing") 				# no locking needed when creating an order
 	rescue
 		logger.debug 	"User.make_order can't make an order -- " +
 						"pretty useless, go fix some crap!"

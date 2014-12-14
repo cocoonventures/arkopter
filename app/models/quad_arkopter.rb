@@ -11,7 +11,10 @@
 #
 
 class QuadArkopter < ActiveRecord::Base
-	def self.reserve
+
+	include ArkopterOperations::KopterStatus
+	
+		def self.reserve
 		arkopter = QuadArkopter.where(status: "ready").take!
 	rescue ActiveRecord::RecordNotFound => e
 		logger.debug "No QuadArkopters are ready!\nEX: #{e.message}"
