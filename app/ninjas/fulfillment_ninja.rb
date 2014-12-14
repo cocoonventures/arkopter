@@ -16,6 +16,7 @@ class FulfillmentNinja
 	rescue
 		logger.debug "FulfillmentNinja fighting Confucius, no idea what happened!"
 	else
+		
 		dispatch_quad_arkopters 
 	end	
 
