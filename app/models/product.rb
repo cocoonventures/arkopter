@@ -19,7 +19,7 @@ class Product < ActiveRecord::Base
 	belongs_to :order
 
 
-	include Arkopter::Status
+	include ArkopterOperations::OrderStatus
 
 	def set_availabilty_async
 		item = self.stock_item

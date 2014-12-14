@@ -21,7 +21,7 @@ module Arkopter
 
     config.assets.precompile    += %w( *.svg *.eot *.woff *.ttf *.js *.css ) 
     config.eager_load            = true
-    config.eager_load_paths     += ["#{config.root}/lib","#{config.root}/app/ninjas", "#{config.root}/lib/arkopter_operations"]
+    config.eager_load_paths     += ["#{config.root}/lib","#{config.root}/app/ninjas"] #, "#{config.root}/lib/arkopter_operations"]
     config.autoload_paths       += %W(#{config.root}/lib #{config.root}/lib/arkopter_operations) 
   end
 end

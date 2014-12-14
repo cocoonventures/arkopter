@@ -23,14 +23,12 @@ gem 'redis-objects'
 # -- Infrastructure
 gem 'guard'
 gem 'launchy'
-#gem 'activerecord-postgres-hstore'
+# gem 'activerecord-postgres-hstore'
 
 gem 'sass', require: 'sass'
 gem 'sshkit', '0.0.34' # this is the only way capistrano v3 works DON'T CHANGE!!!
 gem 'jquery-rails'
 gem 'turbolinks'
-
-
 
 
 # Gems used only for assets and not required

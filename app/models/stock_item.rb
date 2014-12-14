@@ -11,13 +11,14 @@
 #
 
 class StockItem < ActiveRecord::Base
-	#  TODO: make inventory set and sync asynchronous here not just from Sidekiq
+
 	include 	Redis::Objects
 	lock 		:inventory_lock
 	has_many 	:products
 
+	# syncs inventory from Redis until I phase out
 	def sync_inventory
-		@inv 			= Redis::HashKey.new('inventory') if @inv.blank?
+		@inv 			= Redis::HashKey.new('inventory') if @inv.blank?		# new is a "new" connection to Redis, not new :)
 		self.quantity 	= @inv[self.name]										# self.quantity = inventory["#{self.name}"]
 	end 
 
@@ -28,25 +29,38 @@ class StockItem < ActiveRecord::Base
 			@inv 			= Redis::HashKey.new('inventory') if @inv.blank?
 			@inv[self.name] = value if value.present?
 		end
+		self.transaction do
+			self.quantity = value
+			save!
+		end if value != self.quantity
+	rescue
+		logger.debug {"Problem setting inventory to #{value}"}
 	end	
 
-	def stock_warehouse(options={})
+	def stock_warehouse(opts={})
 		
-		{
+		options = {
 			name_prefix: 		"Arktos",
 			status: 			"warehoused",
 			quantity: 			1,
 			name_padding: 		5
-		}.merge!(options)
+		}
+		options.merge!(opts)
+
+		prefix  = options[:name_prefix]
+		padding = options[:name_padding] or 5
 
 		options[:quantity].downto(1) do |i|
 			begin
-				p = self.products.create!(
-					inventory_name: 	"%s%0#{(options[:name_padding])}d" %[options[:name_prefix], i],
-					status: 			options[:status]
-				)
-			rescue
-				logger.debug "Problem creating adding inventory for #{name} item #{i}"
+				inventory_name = "%s%0#{padding}d" %[prefix, i]
+						debugger
+				p = self.products.create!(inventory_name: inventory_name, status: options[:status])
+			rescue => e
+				logger.debug "Problem creating adding inventory for #{name} item #{i}\n" +
+							 "Inspect#{self.inspect}\n" +
+							 "#{inventory_name.inspect}\n" +
+							 "#{options.inspect}\n"
+							 "#{e.message}\n#{e.backtrace.join("\n")}"
 			else
 				self.quantity += 1
 			end
