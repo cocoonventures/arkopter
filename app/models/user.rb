@@ -12,13 +12,17 @@
 class User < ActiveRecord::Base
 	has_many :orders
 
+	# orders are made with a product hash where key=stock_item name and
+	# value=quantity being purchased
 	def make_order(product_hash)
 		order = self.orders.create!(status: "processing")
 	rescue
-		logger.debug "User.make_order can't make an order -- pretty useless, go fix some crap!"
+		logger.debug 	"User.make_order can't make an order -- " +
+						"pretty useless, go fix some crap!"
 		false
 	else
-		order.fulfill_me
+		order.pick_n_pull(product_hash)
+		order.fulfill_me 												# this is asynchronous
 		true
 	end
 end
