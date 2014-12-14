@@ -14,7 +14,7 @@ class AbacusNinja
 
 		if self.class.method_defined?(action) or self.class.private_method_defined?(action)
 			if arguments.size > 0
-				self.send(action,*arguments)
+				self.send(action,*arguments)	
 			else
 				self.send(action) # avoid wrong number arguments potential
 			end

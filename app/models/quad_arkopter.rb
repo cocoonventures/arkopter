@@ -11,17 +11,16 @@
 #
 
 class QuadArkopter < ActiveRecord::Base
-
-
 	def self.reserve
 		arkopter = QuadArkopter.where(status: "ready").take!
 	rescue ActiveRecord::RecordNotFound => e
-		logger.debug "No QuadArkopters are ready!"
-		nil															# optionally may want to block
+		logger.debug "No QuadArkopters are ready!\nEX: #{e.message}"
+		nil																# optionally may want to block
+	rescue
+		nil
 	else
 		arkopter.status = "reserved"
 		arkopter.save
-		return arkopter 											# this should probably be reserved by somthing trackable since I mark it reserved and return it
+		return arkopter 												# this should probably be reserved by somthing trackable since I mark it reserved and return it
 	end
-
 end

@@ -19,6 +19,8 @@ class Product < ActiveRecord::Base
 	belongs_to :order
 
 
+	include Arkopter::Status
+
 	def set_availabilty_async
 		item = self.stock_item
 		AbacusNinja.perform_async("set_availabilty",item.name, self.item.quantity) if item.present?
