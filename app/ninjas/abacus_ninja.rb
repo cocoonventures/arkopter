@@ -1,5 +1,5 @@
 # 
-#                                 Copyright © 2012-13 Michael Kahlil Madison II. 
+#                                 Copyright © 2014- Michael Kahlil Madison II. 
 #
 
 class AbacusNinja

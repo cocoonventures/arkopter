@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141213122645) do
+ActiveRecord::Schema.define(version: 20141214032700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20141213122645) do
     t.integer  "quad_arkopter_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "job_id"
   end
 
   add_index "orders", ["quad_arkopter_id"], name: "index_orders_on_quad_arkopter_id", using: :btree
@@ -40,9 +41,10 @@ ActiveRecord::Schema.define(version: 20141213122645) do
   create_table "quad_arkopters", force: true do |t|
     t.string   "name"
     t.string   "status"
-    t.integer  "deliveries", default: 0
+    t.integer  "deliveries",    default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "delivery_time", default: 60
   end
 
   create_table "stock_items", force: true do |t|

@@ -22,12 +22,12 @@ class Order < ActiveRecord::Base
 			# that background processing doesn't need all the data to serialized 
 			# which can quickly add up, instead Sidekiq just needs to find the 
 			# order_id
-			product_hash.each do |item_name,quantity|
+			product_hash.each do |item_name,quantity|											
 				begin
 					stock_item 			 = StockItem.where(name: item_name).take!				#
 					items_in_stock 		 = stock_item.products.count
 					if items_in_stock 	>= quantity												# earmark for shipping only if we can fulfill a product type in full TODO: push to async ninja
-						trickle_down_updates("processing")
+						trickle_down_status("processing")
 					else
 						logger.debug 	"There aren't enough #{item_name}s to fill " 	+
 										"#{self.user.name}'s order. #{quantity} requested"	+ 
@@ -48,18 +48,33 @@ class Order < ActiveRecord::Base
 
 	# trickles order status down to inventory items and if 
 	# item isn't associated with an order, becomes part of the fam
-	def trickle_down_updates(new_status)
-		# opting to update_all instead of status= here
-		# keeping as Arel Relation makes this a db function update 
-		# and not app memory 
-		if valid_status?(new_status) 									# conditional on validity since circumventing status= alert
-			stock_item.products.limit(quantity).update_all(				# in the future this should maybe use transaction blocks
-				order_id: 		self.id, 								# locking the row and rolling back upon exception. Not yet	
-				status: 		new_status								#
-			) 
-		else
-			logger.debug 	"Order::trickle_down_updates frustrated, stop sending invalid status names" +
-							"you sent #{new_status} which isn't in #{STATUSES.inspect}"
+	# returns. changes its own status too
+	def trickle_down_status(new_status)
+		
+		# db locking for the status change
+		self.transaction do
+
+			begin
+				# opting to update_all instead of status= here
+				# keeping as Arel Relation makes this a db function update 
+				# and not app memory 
+				self.status = new_status
+				save!
+				if valid_status?(new_status) 										# conditional on validity since circumventing status= alert
+					stock_item.products.limit(quantity).update_all(					# in the future this should maybe use transaction blocks
+						order_id: 		self.id, 									# locking the row and rolling back upon exception. Not yet	
+						status: 		new_status									#
+					) 
+				else
+					logger.debug 	"Order::trickle_down_updates frustrated, stop sending invalid status names" +
+									"you sent #{new_status} which isn't in #{STATUSES.inspect}"
+				end
+			rescue
+				logger.debug		"problem saving status to Order #{self.id}, rolling back"
+				raise 				ActiveRecord::Rollback
+			ensure					# regardless return status (if failed this is the old one, otherwise the new)
+				self.status 		
+			end
 		end
 	end
 end

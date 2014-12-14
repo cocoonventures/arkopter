@@ -11,10 +11,11 @@
 #
 
 class QuadArkopter < ActiveRecord::Base
-
+	has_many :orders
+	
 	include ArkopterOperations::KopterStatus
 	
-		def self.reserve
+	def self.reserve
 		arkopter = QuadArkopter.where(status: "ready").take!
 	rescue ActiveRecord::RecordNotFound => e
 		logger.debug "No QuadArkopters are ready!\nEX: #{e.message}"
@@ -26,4 +27,6 @@ class QuadArkopter < ActiveRecord::Base
 		arkopter.save
 		return arkopter 												# this should probably be reserved by somthing trackable since I mark it reserved and return it
 	end
+
+
 end

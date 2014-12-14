@@ -4,7 +4,7 @@ module ArkopterOperations
 
 		 # note2self: don't freakin' use symbols, they're evil (Sidekiq hates them), strings only
 		# if upgraded to Rails 4.2, switch to ActiveRecord enum new type
-		STATUSES = ["processing", "on-arkopter", "en-route", "delivered"].freeze
+		STATUSES = ["warehoused","processing", "on-arkopter", "en-route", "delivered", "cancelled"].freeze
 
 		def status=(new_status)
 			if valid_status?(new_status)
