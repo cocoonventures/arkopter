@@ -62,6 +62,8 @@ In the console:
 	
 ```
 
+QuadArkopters do take 60 seconds to deliver orders, so may require some patience. 
+
 ##Models
 All the lifting is handled by the models and the ninjas (which is what I call the background workers).  The application does what it can to get data in the right place within PostgreSQL so that when a job is sent Sidekiq for processing it can seek an id and pull in whatever it needs to get the costly jobs done.  The point was to reduce serialization of data from app to Redis. SO for example, pick-n-pull of products to make an order happens app side for now, put everything else happen via concurrent queues.
 
