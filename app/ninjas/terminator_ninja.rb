@@ -11,7 +11,7 @@ class TerminatorNinja
 
 	def perform(order_id)
 		@order 		= Order.find(order_id)
-		@arkopter 	= QuadArkopter.find(@order.) if @order.present?
+		@arkopter 	= QuadArkopter.find(@order.quad_arkopter) if @order.present?
 	rescue ActiveRecord::RecordNotFound => e
 		logger.debug 	"TerminatorNinja finding problem finding kopter\#(#{kopter_id}) and order\##{order_id}"
 	rescue

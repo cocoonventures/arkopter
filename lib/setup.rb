@@ -6,7 +6,7 @@ module Setup
 	# until background processing was up and running so I used this module
 	# quick and dirty
 
-	def Setup.add_bobbleheads(quantity=50)
+	def self.add_bobbleheads(quantity=50)
 		["Ari-Bobblehead", "Ryan-Bobblehead", "Andrew-Bobblehead"].each do |p|
 			begin
 				item = StockItem.create!(name: p, quantity: 0, price: 19.99)
@@ -18,7 +18,7 @@ module Setup
 		end
 	end
 
-	def Setup.add_quad_arkopters(quantity=10,prefix="AirWolf")
+	def self.add_quad_arkopters(quantity=10,prefix="AirWolf")
 		padding = 6
 		for kopter_count in 1..quantity do
 			kopter_name = prefix + kopter_count.to_s.rjust(padding,'0')
@@ -30,7 +30,7 @@ module Setup
 		end
 	end
 
-	def Setup.add_users(quantity=100,prefix="ProductUser")
+	def self.add_users(quantity=100,prefix="ProductUser")
 		padding = 6
 		for user_count in 1..quantity do
 			user_name = prefix + user_count.to_s.rjust(padding,'0')
@@ -42,12 +42,13 @@ module Setup
 		end
 	end
 
-	def make_orders(num_orders=5) 
-		StockItem.all.pluck(:name).each  {|p| h["p"] = num_orders }
-		User.all.limit(100).each 		 {|u| u.make_order(h) 	  }
+	def self.make_orders(num_orders=5) 
+		h = Hash.new
+		StockItem.all.pluck(:name).each{|p| h["p"] = num_orders }
+		User.all.limit(100).each{|u| u.make_order(h) 	  }
 	end
 
-	def Setup.clear_database
+	def self.clear_database
 		User.delete_all
 		Order.delete_all
 		Product.delete_all
@@ -55,10 +56,10 @@ module Setup
 		StockItem.delete_all
 	end
 
-	def Setup.populate
+	def self.populate
 		add_users
 		add_bobbleheads
 		add_quad_arkopters
-		# make_orders
+		make_orders
 	end
 end

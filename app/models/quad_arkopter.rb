@@ -2,16 +2,18 @@
 #
 # Table name: quad_arkopters
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  status     :string(255)
-#  deliveries :integer          default(0)
-#  created_at :datetime
-#  updated_at :datetime
+#  id            :integer          not null, primary key
+#  name          :string(255)
+#  status        :string(255)
+#  deliveries    :integer          default(0)
+#  created_at    :datetime
+#  updated_at    :datetime
+#  delivery_time :integer          default(60)
 #
 
 class QuadArkopter < ActiveRecord::Base
 	has_many :orders
+	has_many :products, through: :orders	
 
 	include ArkopterOperations::KopterStatus
 	
@@ -39,5 +41,4 @@ class QuadArkopter < ActiveRecord::Base
 		sleep self.delivery_time.seconds 								# default time enforced by DB is 60 
 		true
 	end
-
 end

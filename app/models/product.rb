@@ -14,10 +14,10 @@
 
 # The Products table is the Inventory of SKUs 
 class Product < ActiveRecord::Base
-	belongs_to :stock_item
-	belongs_to :quad_arkopter
-	belongs_to :order
-
+	belongs_to 	:stock_item
+	belongs_to 	:order
+	
+	has_one	:quad_arkopter, through: :order
 
 	include ArkopterOperations::OrderStatus
 

@@ -14,7 +14,8 @@ class StockItem < ActiveRecord::Base
 
 	include 	Redis::Objects
 	lock 		:inventory_lock
-	has_many 	:products
+
+	has_many 	:products, dependent: :destroy
 
 	# syncs inventory from Redis until I phase out
 	def sync_inventory
@@ -37,24 +38,22 @@ class StockItem < ActiveRecord::Base
 		logger.debug {"Problem setting inventory to #{value}"}
 	end	
 
-	def stock_warehouse(opts={})
+	def stock_warehouse(options={})
 		
-		options = {
+		options.reverse_merge!(
 			name_prefix: 		"Arktos",
 			status: 			"warehoused",
 			quantity: 			1,
 			name_padding: 		5
-		}
-		options.merge!(opts)
+		)
 
 		prefix  = options[:name_prefix]
-		padding = options[:name_padding] or 5
+		padding = options[:name_padding]
 
 		options[:quantity].downto(1) do |i|
 			begin
-				inventory_name = "%s%0#{padding}d" %[prefix, i]
-						debugger
-				p = self.products.create!(inventory_name: inventory_name, status: options[:status])
+				product_name = "%s%0#{padding}d" %[prefix, i]
+		 		products.create!(inventory_name: product_name, status: options[:status])
 			rescue => e
 				logger.debug "Problem creating adding inventory for #{name} item #{i}\n" +
 							 "Inspect#{self.inspect}\n" +
@@ -65,8 +64,8 @@ class StockItem < ActiveRecord::Base
 				self.quantity += 1
 			end
 		end
-		self.save
-		set_inventory
+		save!
+	 	set_inventory
 	end
 
 	private
@@ -81,6 +80,6 @@ class StockItem < ActiveRecord::Base
 
 	def available?
 		sync_inventory # non-async
-		return (self.quantity > 0)
+		return (quantity > 0)
 	end
 end

@@ -7,8 +7,7 @@ module ArkopterOperations
 
 		def status=(new_status)
 			if valid_status?(new_status)
-			  	self.status = new_status
-			  	
+			  	super(new_status)
 			else 
 				logger.debug 	"Use a valid status: #{new_status} isn't in #{STATUSES.inspect}"
 				self.status 	# return the old status

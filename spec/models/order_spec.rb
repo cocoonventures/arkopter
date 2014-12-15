@@ -8,6 +8,7 @@
 #  quad_arkopter_id :integer
 #  created_at       :datetime
 #  updated_at       :datetime
+#  job_id           :string(255)
 #
 
 require 'spec_helper'
