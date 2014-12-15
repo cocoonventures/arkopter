@@ -19,10 +19,9 @@ class User < ActiveRecord::Base
 	rescue
 		logger.debug 	"User.make_order can't make an order -- " +
 						"pretty useless, go fix some crap!"
-		false
+		nil
 	else
 		order.pick_n_pull(product_hash)
-		order.fulfill_me 												# this is asynchronous
-		true
+		# order.fulfill_me 												# this is asynchronous
 	end
 end

@@ -3,7 +3,7 @@ module ArkopterOperations
 		extend self
 
 		# note2self: don't use symbols, Sidekiq hates them, strings only
-		STATUSES = ["warehoused","processing", "on-arkopter", "en-route", "delivered", "canceled"].freeze
+		STATUSES = ["warehoused","processing", "on-arkopter", "en-route", "delivered", "marked-for-cancellation","canceled"].freeze
 
 		def status=(new_status)
 			if valid_status?(new_status)

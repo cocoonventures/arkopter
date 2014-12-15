@@ -13,12 +13,13 @@
 
 class Order < ActiveRecord::Base
 	belongs_to 	:user
-	belongs_to 	:quad_arkopter
+	belongs_to 	:quad_arkopter, autosave: true
 	has_many	:products
 
 	include ArkopterOperations::OrderStatus
 
 	def pick_n_pull(product_hash)
+	 	logger.debug {"Product Hash: #{product_hash.inspect}\n"}
 		if product_hash.present?	
 			# We need to connect all available products to the Order so 
 			# that background processing doesn't need all the data to serialized 
@@ -26,6 +27,7 @@ class Order < ActiveRecord::Base
 			# order_id
 			product_hash.each do |item_name,quantity|											
 				begin
+					logger.debug {"in:#{item_name} and q:#{quantity}"}
 					stock_item 			 = StockItem.where(name: item_name).take!			
 					items_in_stock 		 = stock_item.quantity
 
@@ -33,7 +35,7 @@ class Order < ActiveRecord::Base
 					if items_in_stock 	>= quantity
 						self.transaction do
 							# keeping as Arel Relation, db update over memory
-							stock_item.products.limit(quantity).update_attributes!(order_id: self.id, status: "processing")
+							stock_item.products.limit(quantity).update_all(order_id: self.id, status: "processing")
 						end
 					else
 						logger.debug 	"There aren't enough #{item_name}s to fill " 		+
@@ -76,12 +78,11 @@ class Order < ActiveRecord::Base
 		# db locking for the status change
 		self.transaction do
 			begin
-				
 				if valid_status?(new_status)
 					self.status = new_status
 					save!
-					new_status 	= "warehoused" if self.status = "canceled" #if Order if cancel then put products back on the shelf
-					products.update_all(status: new_status)
+					new_status 	= "warehoused" if self.status == "canceled" #if Order if cancel then put products back on the shelf
+					self.products.update_all(status: new_status)
 				else
 					logger.debug 	"Order::trickle_down_updates frustrated, stop sending invalid status names" +
 									"you sent #{new_status} which isn't in #{STATUSES.inspect}"

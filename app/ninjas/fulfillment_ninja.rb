@@ -17,6 +17,7 @@ class FulfillmentNinja
 		logger.debug "FulfillmentNinja fighting Confucius, no idea what happened!"
 	else
 		until load_quad_arkopter do
+			logger.debug {"Go to sleep punk! sleeper_hold engaged"}
 			sleeper_hold  									# wait for transportation arrival
 		end
 		dispatch_quad_arkopter if @order.on_arkopter? 		# while waiting for an available helicopter state could have changed
@@ -29,10 +30,10 @@ class FulfillmentNinja
 			# lock db rows
 			@order.transaction do
 				@order.quad_arkopter = @q 					# assign arkopter to order
+				@order.quad_arkopter.status = "loaded-up"
 				@order.save!
 			end 
 			@order.trickle_down_status("on-arkopter") 		# trickle has it's own lock
-
 		else
 			logger "There are no QuadArkopters available!"
 			return false
@@ -52,17 +53,18 @@ class FulfillmentNinja
 	end
 
 	def dispatch_quad_arkopter
+		logger.info		{"Dispatcing Order \##{@order.id} on #{@order.quad_arkopter.name})"}
 		@order.transaction do
 			@order.trickle_down_status("en-route")
-
+			@order.quad_arkopter.status = "cargo-check"
 			# recycling job_id, if we got this far then this worker is done, assigning next job to it
 			# offloading delivery to the CargoNinja
 			@order.job_id = CargoNinja.perform_async(@order.quad_arkopter_id, @order.id)
 			@order.save!
 		end 
 	rescue
-		logger.debug 	"Problem dispatching Order #{@order.id}, job may be compromised"
+		logger.debug 	{"Problem dispatching Order #{@order.id}, job may be compromised"}
 	else
-		logger.info		"Sending #{@order.stock_item.name} Order \##{@order.id} to CargoNinja (job: #{@order.job_id})"
+		logger.info		{"Sending Order \##{@order.id} to CargoNinja (job: #{@order.job_id})"}
 	end
 end

@@ -1,6 +1,13 @@
+require 'sidekiq/web'
+
 Arkopter::Application.routes.draw do
 
-  require 'sidekiq/web'
+  resources :orders
+  resources :products
+  resources :quad_arkopters
+  resources :stock_items
+  resources :users
+
   mount Sidekiq::Web => '/sidekiq'
 
   # get "orders/new"
@@ -46,7 +53,7 @@ Arkopter::Application.routes.draw do
   # get "users/index"
   # get "users/show"
 
-  
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

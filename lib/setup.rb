@@ -44,8 +44,16 @@ module Setup
 
 	def self.make_orders(num_orders=5) 
 		h = Hash.new
-		StockItem.all.pluck(:name).each{|p| h["p"] = num_orders }
+		StockItem.all.pluck(:name).each{|p| h[p] = num_orders }
 		User.all.limit(100).each{|u| u.make_order(h) 	  }
+	end
+
+	def self.fulfill_orders
+		Order.all.each{|o| o.fulfill_me}
+	end
+
+	def self.cancel(status="processing")
+		Order.where(status: status).each {|o| o.cancel_me}
 	end
 
 	def self.clear_database
@@ -57,9 +65,20 @@ module Setup
 	end
 
 	def self.populate
+		clear_database
 		add_users
 		add_bobbleheads
 		add_quad_arkopters
+		# make_orders
+	end
+	def self.make_one_order
+		u = User.first
+		s = StockItem.first
+		u.make_order({s.name => s.quantity})
+	end
+	def self.populate_and_make_orders
+		clear_database
+		populate
 		make_orders
 	end
 end

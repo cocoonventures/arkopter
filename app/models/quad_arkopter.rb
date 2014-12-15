@@ -13,7 +13,7 @@
 
 class QuadArkopter < ActiveRecord::Base
 	has_many :orders
-	has_many :products, through: :orders	
+	has_many :products	
 
 	include ArkopterOperations::KopterStatus
 	
@@ -37,7 +37,7 @@ class QuadArkopter < ActiveRecord::Base
 	# this should only be called from the ninja/worker 
 	# for now delivery is just sleeping and returning true
 	# but feels like it should belongs to the kopter
-	def deliver_order
+	def deliver
 		sleep self.delivery_time.seconds 								# default time enforced by DB is 60 
 		true
 	end

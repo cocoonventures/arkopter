@@ -2,7 +2,7 @@ module ArkopterOperations
 	module KopterStatus
 		extend self
 				
-		STATUSES = ["ready", "reserved", "loaded-up", "en-route", "in-redeployment"].freeze	
+		STATUSES = ["ready", "reserved", "loaded-up", "cargo-check","en-route", "in-redeployment"].freeze	
 
 
 		def status=(new_status)

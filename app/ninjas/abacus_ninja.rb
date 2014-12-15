@@ -7,7 +7,7 @@
 class AbacusNinja
 	include Sidekiq::Worker
 
-	sidekiq_options queue: "availability", backtrace: true
+	sidekiq_options queue: "abacus", backtrace: true
 	sidekiq_options retry: true
 
 	def perform(action, *arguments)
