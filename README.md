@@ -3,8 +3,9 @@
 ## Brief Word
 Here is my [humble implementation] of the challenge.   
 
-A note: My environment got hosed from an update wthin the 48 hour window; so instead of fighting it I decided to wrote a first pass of completely untested/unrun code to meet the deadline.  I figured after I could go back, fix my environment and actually test the workers/bg-queue. My typical approach would be heavy on the test driven and serious QA side of things. 
+My environment got hosed from a laptop update wthin the 48 hour window; so instead of fighting it I decided to write a first pass completely untested/unrun code to meet the deadline.  I figured after I could go back, fix my environment and actually test the workers/bg-queue. My typical approach would be heavy on the test driven and serious QA side of things. I made a few commits after the 48 hour window once my environment was better.
 
+## About the code
 Arkopter uses asynchronous background queues to process everything. I migrated to using PostgreSQL and Redis midway.  PostgreSQL was used to store object data and Redis for background processing of queues; I also used Redis to store real-time inventory numbers in a Redis hash and transitioned to Redis Semaphores to lock the inventory on a hash key level when updating the inventory.  I did test out Redis::Objects and you will see some of my locks use it, mixed with models (like StockItem for example) but I hted it and was going to transition to Redis Semaphores entirely.  Locking also occurs on rows being modified in PSQL using a transaction mechanism. 
 
 Initially I synced inventory numbers between the psql and redis which I thought would be useful, but decided it was clunky, in the end I gave the application it’s own connection to Redis along with the background processor to get inventory numbers.  However, at present the application currently reconciles PSQL and Redis inventory numbers. 
