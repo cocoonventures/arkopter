@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # -- Core
-gem 'rails', '4.0.0'
+gem 'rails', '4.0.13'
 gem 'arel',  github: 'rails/arel', branch: '4-0-stable'
 gem 'pg', '0.15.1'
 
